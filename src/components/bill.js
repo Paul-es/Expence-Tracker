@@ -26,7 +26,8 @@ import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import { BiPlus, BiPaperPlane, BiXCircle } from "react-icons/bi";
+import { BiPlus, BiPaperPlane, BiXCircle, BiEdit } from "react-icons/bi";
+import { AiOutlineDelete } from "react-icons/ai";
 
 function Bill() {
   const [open, setOpen] = React.useState(false);
@@ -37,7 +38,8 @@ function Bill() {
   const [bills, setBills] = React.useState({
     title: "",
     category: "",
-    date: new Date(),
+    date:"" ,
+    dateFull: new Date(),
     amount: "",
   });
   const history = useHistory();
@@ -62,13 +64,14 @@ function Bill() {
   };
 
   const handleSubmit = (event) => {
+
     localStorage.setItem(bills.title, JSON.stringify(bills));
   };
   const handleCategory = (event) => {
     setBills({ ...bills, category: event.target.value });
   };
-  const handleDateChange = (date) => {
-    setBills({ ...bills, date: format(date, "MM") });
+  const handleDateChange = (event) => {
+    setBills({ ...bills, dateFull:format(event,'yyyy-MM-dd'),date:format(event,'MM')});
   };
 
   const handleTitle = (event) => {
@@ -76,6 +79,8 @@ function Bill() {
   };
   const handleAmount = (event) => {
     setBills({ ...bills, amount: event.target.value });
+    
+
   };
   const deleteBill = (del) => {
     localStorage.removeItem(del);
@@ -215,7 +220,7 @@ function Bill() {
                       style={{ marginTop: "30px" }}
                       format="MM/dd/yyyy"
                       onChange={handleDateChange}
-                      value={bills.date}
+                      value={bills.dateFull}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
                       }}
@@ -258,7 +263,7 @@ function Bill() {
               }}
             >
               <CardContent>
-                <Typography component="h2" variant="h5" color="textSecondary">
+                <Typography component="h2" variant="h5">
                   {item.title}
                 </Typography>
                 <Typography
@@ -267,15 +272,19 @@ function Bill() {
                 >
                   {item.category}
                 </Typography>
+                <Typography style={{ color: "red"}}>
+                  Due: {item.amount} Rs on {item.dateFull}
+                </Typography>
               </CardContent>
               <CardActions style={{ backgroundColor: "#e6e6e6" }}>
-                <Button size="large">Edit</Button>
+                <Button style={{ fontSize: "25px" }}>
+                  <BiEdit />
+                </Button>
                 <Button
                   onClick={() => deleteBill(item.title)}
-                  style={{ color: "red", right: -100 }}
-                  size="large"
+                  style={{ right: -165, fontSize: "25px" }}
                 >
-                  Delete
+                  <AiOutlineDelete />
                 </Button>
               </CardActions>
             </Card>
