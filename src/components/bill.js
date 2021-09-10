@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import "../styles/bill.css";
-import category from './category.json';
+import category from "./category.json";
 import {
   Button,
   Modal,
@@ -24,24 +24,33 @@ import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import { BiPlus, BiPaperPlane } from "react-icons/bi";
+import { BiPlus, BiPaperPlane, BiXCircle } from "react-icons/bi";
 
 function App() {
   const [open, setOpen] = React.useState(false);
+  const [hide, setHide] = React.useState(true);
+  const [filterClose, setFilterClose] = React.useState(false);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
-
-  var localBills = [];
-  for (var i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    localBills.push(JSON.parse(localStorage.getItem(key)));
-  }
-
+  const [localBills, setLocalbills] = React.useState([]);
   const [bills, setBills] = React.useState({
     title: "",
     category: "",
     date: new Date(),
     amount: "",
   });
+
+  const track = () => {
+    if (hide === true) {
+      for (var i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        localBills.push(JSON.parse(localStorage.getItem(key)));
+        setHide(false);
+      }
+    }
+  };
+  track();
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -74,9 +83,24 @@ function App() {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleFilter = () => {
+  const handleFilter = (data) => {
     setAnchorEl(null);
+    setFilterClose((true))
+    var list = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (JSON.parse(localStorage.getItem(key)).category === data) {
+        list.push(JSON.parse(localStorage.getItem(key)));
+      }
+    }
+    setLocalbills(list);
   };
+  const handleClear=()=>{
+    setHide(true)
+    setFilterClose(false)
+    setLocalbills([])
+    track()
+  }
   return (
     <div className="App">
       <AppBar position="static">
@@ -89,6 +113,16 @@ function App() {
           <Typography variant="h6" style={{ flexGrow: 1 }}>
             Bill Tracker
           </Typography>
+          { filterClose ?
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleClear}
+            style={{ paddingRight: "12px", marginRight: "1.5rem" }}
+            startIcon={<BiXCircle />}
+          >
+            Clear
+          </Button> :null}
           <Button color="inherit" variant="outlined" onClick={handleClick}>
             Filter
           </Button>
@@ -97,10 +131,11 @@ function App() {
             anchorEl={anchorEl}
             keepMounted
             open={Boolean(anchorEl)}
-            onClose={handleFilter}
           >
             {category.map((option) => (
-            <MenuItem onClick={handleFilter}>{option.value}</MenuItem>
+              <MenuItem onClick={() => handleFilter(option.value)}>
+                {option.value}
+              </MenuItem>
             ))}
           </Menu>
         </Toolbar>
