@@ -1,8 +1,13 @@
 import React from "react";
-import Bill from './components/bill'
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import Chart from "./components/chart";
+import Bill from "./components/bill";
 function App() {
   return (
-    <Bill/>
+    <Router>
+      <Route exact path="/" component={Bill} />
+      <Route exact path="/chart" component={Chart} />
+    </Router>
   );
 }
 

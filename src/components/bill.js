@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
-import "date-fns";
+import { format } from "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import "../styles/bill.css";
 import category from "./category.json";
+import { useHistory } from "react-router-dom";
+
 import {
   Button,
   Modal,
@@ -26,11 +28,10 @@ import {
 } from "@material-ui/pickers";
 import { BiPlus, BiPaperPlane, BiXCircle } from "react-icons/bi";
 
-function App() {
+function Bill() {
   const [open, setOpen] = React.useState(false);
   const [hide, setHide] = React.useState(true);
   const [filterClose, setFilterClose] = React.useState(false);
-
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [localBills, setLocalbills] = React.useState([]);
   const [bills, setBills] = React.useState({
@@ -39,6 +40,7 @@ function App() {
     date: new Date(),
     amount: "",
   });
+  const history = useHistory();
 
   const track = () => {
     if (hide === true) {
@@ -65,8 +67,8 @@ function App() {
   const handleCategory = (event) => {
     setBills({ ...bills, category: event.target.value });
   };
-  const handleDateChange = async (date) => {
-    setBills({ ...bills, date: date.toDateString() });
+  const handleDateChange = (date) => {
+    setBills({ ...bills, date: format(date, "MM") });
   };
 
   const handleTitle = (event) => {
@@ -85,7 +87,7 @@ function App() {
 
   const handleFilter = (data) => {
     setAnchorEl(null);
-    setFilterClose((true))
+    setFilterClose(true);
     var list = [];
     for (var i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -95,12 +97,13 @@ function App() {
     }
     setLocalbills(list);
   };
-  const handleClear=()=>{
-    setHide(true)
-    setFilterClose(false)
-    setLocalbills([])
-    track()
-  }
+  const handleClear = () => {
+    setHide(true);
+    setFilterClose(false);
+    setLocalbills([]);
+    track();
+  };
+
   return (
     <div className="App">
       <AppBar position="static">
@@ -113,19 +116,29 @@ function App() {
           <Typography variant="h6" style={{ flexGrow: 1 }}>
             Bill Tracker
           </Typography>
-          { filterClose ?
           <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleClear}
-            style={{ paddingRight: "12px", marginRight: "1.5rem" }}
-            startIcon={<BiXCircle />}
+            color="inherit"
+            variant="outlined"
+            style={{ marginRight: "1.5rem" }}
+            onClick={() => history.push("/chart")}
           >
-            Clear
-          </Button> :null}
+            Track
+          </Button>
+          {filterClose ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleClear}
+              style={{ paddingRight: "12px", marginRight: "1.5rem" }}
+              startIcon={<BiXCircle />}
+            >
+              Clear
+            </Button>
+          ) : null}
           <Button color="inherit" variant="outlined" onClick={handleClick}>
             Filter
           </Button>
+
           <Menu
             id="simple-menu"
             anchorEl={anchorEl}
@@ -273,4 +286,4 @@ function App() {
   );
 }
 
-export default App;
+export default Bill;

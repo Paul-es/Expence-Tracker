@@ -1,0 +1,18 @@
+.App {
+  background-color: #d9d7d7;
+  min-height: 100vh;
+  color: black !important;
+}
+
+.chart {
+  width: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  margin-top: 12%;
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+}
