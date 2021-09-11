@@ -161,6 +161,7 @@ function Bill() {
 
   return (
     <div className="App">
+      {/*-------------------App Bar------------------------------*/}
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -199,6 +200,7 @@ function Bill() {
               Clear
             </Button>
           ) : null}
+          {/*-------------------Category DropDown--------------------------*/}
           <Button
             startIcon={<BiFilterAlt />}
             variant="contained"
@@ -212,6 +214,7 @@ function Bill() {
             anchorEl={anchorEl}
             keepMounted
             open={Boolean(anchorEl)}
+            onClose={handleClose}
           >
             {category.map((option) => (
               <MenuItem onClick={() => handleFilter(option.value)}>
@@ -221,7 +224,7 @@ function Bill() {
           </Menu>
         </Toolbar>
       </AppBar>
-
+      {/*-------------------Monthly Budget Modal----------------------------*/}
       <Modal
         className="modal"
         open={openBudget}
@@ -291,7 +294,7 @@ function Bill() {
           </div>
         </Fade>
       </Modal>
-
+      {/*-------------------Add bill btn------------------------------*/}
       <Button
         className="add-btn"
         variant="contained"
@@ -300,7 +303,7 @@ function Bill() {
       >
         <BiPlus />
       </Button>
-
+      {/*-------------------Add Bill model------------------------------*/}
       <Modal
         className="modal"
         open={open}
@@ -386,6 +389,7 @@ function Bill() {
           </div>
         </Paper>
       </Modal>
+      {/*-------------------Cards------------------------------*/}
       <div className="Cards">
         {localBills.map((item) => (
           <div style={{ display: "inline-block" }}>
