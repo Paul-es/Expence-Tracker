@@ -131,13 +131,18 @@ function Bill() {
       const key = localStorage.key(i);
       const data = JSON.parse(localStorage.getItem(key));
       if (data.date === monthBudget.month) {
-        s = s + parseInt(data.amount);
-        if (s <= parseInt(monthBudget.amount)) {
-          list.push(data);
-        }
+        list.push(data);
       }
     }
-    setLocalbills(list);
+    list.sort((a, b) => parseInt(a.amount) - parseInt(b.amount));
+    var listfinal = [];
+    for (var i = 0; i < list.length; i++) {
+      s = s + parseInt(list[i].amount);
+      if (s <= parseInt(monthBudget.amount)) {
+        listfinal.push(list[i]);
+      }
+    }
+    setLocalbills(listfinal);
     setFilterClose(true);
   };
   const handleFilter = (data) => {
