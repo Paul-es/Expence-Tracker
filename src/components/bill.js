@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import "../styles/bill.css";
 import category from "./category.json";
+import months from "./months.json";
 import { useHistory } from "react-router-dom";
 
 import {
@@ -21,27 +22,46 @@ import {
   Toolbar,
   IconButton,
   Menu,
+  Fade,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  FormControl,
 } from "@material-ui/core";
+
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import { BiPlus, BiPaperPlane, BiXCircle, BiEdit } from "react-icons/bi";
+import {
+  BiPlus,
+  BiPaperPlane,
+  BiXCircle,
+  BiEdit,
+  BiFilterAlt,
+} from "react-icons/bi";
 import { AiOutlineDelete } from "react-icons/ai";
 
 function Bill() {
-  const [open, setOpen] = React.useState(false);
-  const [hide, setHide] = React.useState(true);
-  const [filterClose, setFilterClose] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [localBills, setLocalbills] = React.useState([]);
-  const [bills, setBills] = React.useState({
+  const [open, setOpen] = useState(false);
+  const [hide, setHide] = useState(true);
+  const [openBudget, setOpenBudget] = useState(false);
+
+  const [filterClose, setFilterClose] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [localBills, setLocalbills] = useState([]);
+  const [bills, setBills] = useState({
     title: "",
     category: "",
-    date:"" ,
+    date: "",
     dateFull: new Date(),
     amount: "",
   });
+  const [monthBudget, setMonthBudget] = useState({
+    month: "",
+    amount: "",
+  });
+
   const history = useHistory();
 
   const track = () => {
@@ -64,14 +84,17 @@ function Bill() {
   };
 
   const handleSubmit = (event) => {
-
     localStorage.setItem(bills.title, JSON.stringify(bills));
   };
   const handleCategory = (event) => {
     setBills({ ...bills, category: event.target.value });
   };
   const handleDateChange = (event) => {
-    setBills({ ...bills, dateFull:format(event,'yyyy-MM-dd'),date:format(event,'MM')});
+    setBills({
+      ...bills,
+      dateFull: format(event, "yyyy-MM-dd"),
+      date: format(event, "MM"),
+    });
   };
 
   const handleTitle = (event) => {
@@ -79,8 +102,6 @@ function Bill() {
   };
   const handleAmount = (event) => {
     setBills({ ...bills, amount: event.target.value });
-    
-
   };
   const deleteBill = (del) => {
     localStorage.removeItem(del);
@@ -89,7 +110,36 @@ function Bill() {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
+  const handleBudgetOpen = () => {
+    setOpenBudget(true);
+  };
+  const handleCloseBudget = () => {
+    setOpenBudget(false);
+  };
+  const handleMonth = (event) => {
+    setMonthBudget({ ...monthBudget, month: event.target.value });
+  };
+  const handleMonthAmount = (event) => {
+    setMonthBudget({ ...monthBudget, amount: event.target.value });
+  };
+  const handleBudgetSubmit = (e) => {
+    e.preventDefault();
+    setOpenBudget(false);
+    var list = [];
+    var s = 0;
+    for (var i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const data = JSON.parse(localStorage.getItem(key));
+      if (data.date === monthBudget.month) {
+        s = s + parseInt(data.amount);
+        if (s <= parseInt(monthBudget.amount)) {
+          list.push(data);
+        }
+      }
+    }
+    setLocalbills(list);
+    setFilterClose(true);
+  };
   const handleFilter = (data) => {
     setAnchorEl(null);
     setFilterClose(true);
@@ -129,6 +179,15 @@ function Bill() {
           >
             Track
           </Button>
+
+          <Button
+            color="inherit"
+            variant="outlined"
+            style={{ marginRight: "1.5rem" }}
+            onClick={handleBudgetOpen}
+          >
+            Set Budget
+          </Button>
           {filterClose ? (
             <Button
               variant="contained"
@@ -140,7 +199,11 @@ function Bill() {
               Clear
             </Button>
           ) : null}
-          <Button color="inherit" variant="outlined" onClick={handleClick}>
+          <Button
+            startIcon={<BiFilterAlt />}
+            variant="contained"
+            onClick={handleClick}
+          >
             Filter
           </Button>
 
@@ -158,6 +221,77 @@ function Bill() {
           </Menu>
         </Toolbar>
       </AppBar>
+
+      <Modal
+        className="modal"
+        open={openBudget}
+        onClose={handleCloseBudget}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={openBudget}>
+          <div className="budget-model">
+            <h2 style={{ paddingBottom: "15px" }} id="transition-modal-title">
+              Set Monthly Budget !!!
+            </h2>
+            <form onSubmit={handleBudgetSubmit}>
+              <Grid container>
+                <Grid item xs={6}>
+                  <TextField
+                    id="outlined-select-currency"
+                    select
+                    required
+                    label="Select"
+                    value={monthBudget.month}
+                    onChange={handleMonth}
+                    helperText="Select the Month"
+                    variant="outlined"
+                  >
+                    {months.map((option) => (
+                      <MenuItem key={option.value} value={option.label}>
+                        {option.value}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={6}>
+                  <FormControl variant="outlined">
+                    <InputLabel htmlFor="outlined-adornment-amount">
+                      Amount
+                    </InputLabel>
+
+                    <OutlinedInput
+                      id="outlined-adornment-amount"
+                      type="number"
+                      required
+                      onChange={handleMonthAmount}
+                      startAdornment={
+                        <InputAdornment position="start">₹</InputAdornment>
+                      }
+                      labelWidth={60}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disableElevation
+                    style={{ marginTop: "20px" }}
+                  >
+                    <BiPaperPlane style={{ fontSize: "30px" }} />
+                  </Button>
+                </Grid>
+              </Grid>
+            </form>
+          </div>
+        </Fade>
+      </Modal>
+
       <Button
         className="add-btn"
         variant="contained"
@@ -272,7 +406,7 @@ function Bill() {
                 >
                   {item.category}
                 </Typography>
-                <Typography style={{ color: "red"}}>
+                <Typography style={{ color: "red" }}>
                   Due: {item.amount} Rs on {item.dateFull}
                 </Typography>
               </CardContent>

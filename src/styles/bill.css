@@ -42,3 +42,10 @@
   position: absolute;
   align-items: center;
 }
+
+.budget-model {
+  background-color: white;
+  padding: 5% 10% 5% 10%;
+  text-align: center;
+  border-radius: 10px;
+}

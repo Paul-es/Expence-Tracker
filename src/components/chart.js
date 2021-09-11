@@ -56,7 +56,7 @@ function Charts() {
         curve: "straight",
       },
       title: {
-        text: "Amount Spend By Month",
+        text: "Amount Due By Month",
         align: "left",
       },
       fill: {
