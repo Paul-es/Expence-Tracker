@@ -39,6 +39,7 @@ import {
   BiXCircle,
   BiEdit,
   BiFilterAlt,
+  BiPlusCircle,
 } from "react-icons/bi";
 import { AiOutlineDelete } from "react-icons/ai";
 
@@ -46,6 +47,7 @@ function Bill() {
   const [open, setOpen] = useState(false);
   const [hide, setHide] = useState(true);
   const [openBudget, setOpenBudget] = useState(false);
+  const [initial, setInitial] = useState(false);
 
   const [filterClose, setFilterClose] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -63,7 +65,12 @@ function Bill() {
   });
 
   const history = useHistory();
-
+useEffect(()=>{
+  if(localStorage.length==0)
+  {
+    setInitial(true)
+  }
+})
   const track = () => {
     if (hide === true) {
       for (var i = 0; i < localStorage.length; i++) {
@@ -229,6 +236,21 @@ function Bill() {
           </Menu>
         </Toolbar>
       </AppBar>
+      {/*-------------------Initial Text----------------------------*/}
+      {initial ? (
+      <div className="initial">
+        <h3>Press</h3>
+        <span
+          style={{
+            fontSize: "2.5rem",
+            padding: "30px 10px 0px 10px",
+          }}
+        >
+          <BiPlusCircle />
+        </span>
+        <h3> to add !!!</h3>
+      </div>
+      ): null}
       {/*-------------------Monthly Budget Modal----------------------------*/}
       <Modal
         className="modal"

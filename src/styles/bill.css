@@ -49,3 +49,16 @@
   text-align: center;
   border-radius: 10px;
 }
+.initial {
+  font-family: "Lucida Console", "Courier New", monospace;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+  color: #474646;
+  font-size: 30px;
+  display: flex;
+  opacity: 0.9;
+}
